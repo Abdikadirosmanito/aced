@@ -7,387 +7,186 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #0e0f14;
-    --surface: #16181f;
-    --surface2: #1e2029;
-    --border: rgba(255,255,255,0.07);
-    --text: #f0f0f0;
-    --muted: #6b6e80;
-    --accent: #c8f135;
-    --accent2: #6c63ff;
+    --bg: #0e0f14; --surface: #16181f; --surface2: #1e2029;
+    --border: rgba(255,255,255,0.07); --text: #f0f0f0;
+    --muted: #6b6e80; --accent: #c8f135;
   }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E"); opacity: 0.025; pointer-events: none; z-index: 0; }
+  .hidden { display: none !important; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+  /* AUTH */
+  #authScreen { position: relative; z-index: 1; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .dot-grid { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .dot-grid::after { content: ''; position: absolute; inset: -50%; background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 32px 32px; }
+  .glow { position: absolute; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(200,241,53,0.07) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+  .auth-box { position: relative; z-index: 2; background: var(--surface); border: 1px solid var(--border); border-radius: 28px; padding: 52px 44px; width: 100%; max-width: 400px; text-align: center; animation: fadeUp 0.5s ease both; }
+  .auth-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 36px; letter-spacing: -1.5px; margin-bottom: 8px; }
+  .auth-logo span { color: var(--accent); }
+  .auth-sub { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .auth-tagline { color: var(--muted); font-size: 14px; font-weight: 300; margin-bottom: 44px; line-height: 1.7; }
+  .google-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 15px 20px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.1); background: #fff; color: #1f1f1f; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: box-shadow 0.2s, transform 0.15s; }
+  .google-btn:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.35); transform: translateY(-2px); }
+  .google-btn:active { transform: translateY(0); }
+  .google-icon { width: 20px; height: 20px; flex-shrink: 0; }
+  .auth-divider { display: flex; align-items: center; gap: 12px; margin: 24px 0 8px; color: var(--muted); font-size: 11px; }
+  .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .auth-note { font-size: 11px; color: var(--muted); line-height: 1.7; }
+  .auth-note a { color: var(--accent); text-decoration: none; }
 
-  /* noise overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-    opacity: 0.025;
-    pointer-events: none;
-    z-index: 0;
-  }
+  /* badges row */
+  .badges { display: flex; gap: 8px; justify-content: center; margin-bottom: 44px; flex-wrap: wrap; }
+  .badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 
+  /* MAIN APP */
   .app { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 24px 80px; }
-
-  /* header */
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 28px 0 48px;
-    animation: fadeDown 0.5s ease both;
-  }
-
-  .logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 18px;
-    letter-spacing: -0.5px;
-    color: var(--text);
-  }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 28px 0 48px; animation: fadeDown 0.5s ease both; }
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; letter-spacing: -0.5px; }
   .logo span { color: var(--accent); }
-
-  .exam-badge {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--muted);
-    cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
-  }
-  .exam-badge:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* hero */
-  .hero {
-    margin-bottom: 48px;
-    animation: fadeDown 0.5s 0.1s ease both;
-  }
-  .hero h1 {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: clamp(32px, 6vw, 52px);
-    line-height: 1.05;
-    letter-spacing: -1.5px;
-    margin-bottom: 14px;
-  }
-  .hero h1 em {
-    font-style: normal;
-    color: var(--accent);
-  }
-  .hero p {
-    color: var(--muted);
-    font-size: 15px;
-    font-weight: 300;
-    max-width: 420px;
-    line-height: 1.6;
-  }
-
-  /* search */
-  .search-wrap {
-    margin-bottom: 36px;
-    animation: fadeDown 0.5s 0.15s ease both;
-  }
-  .search-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 16px;
-    transition: border-color 0.2s;
-  }
+  .user-pill { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px 5px 5px; font-size: 12px; color: var(--muted); cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+  .user-pill:hover { border-color: rgba(255,255,255,0.18); color: var(--text); }
+  .user-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #0e0f14; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; }
+  .hero { margin-bottom: 44px; animation: fadeDown 0.5s 0.1s ease both; }
+  .hero h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(28px, 5vw, 48px); line-height: 1.05; letter-spacing: -1.5px; margin-bottom: 12px; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p { color: var(--muted); font-size: 14px; font-weight: 300; max-width: 400px; line-height: 1.6; }
+  .search-wrap { margin-bottom: 28px; animation: fadeDown 0.5s 0.15s ease both; }
+  .search-box { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; transition: border-color 0.2s; }
   .search-box:focus-within { border-color: rgba(200,241,53,0.4); }
   .search-box svg { color: var(--muted); flex-shrink: 0; }
-  .search-box input {
-    background: none;
-    border: none;
-    outline: none;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    width: 100%;
-  }
+  .search-box input { background: none; border: none; outline: none; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; width: 100%; }
   .search-box input::placeholder { color: var(--muted); }
-
-  /* filter pills */
-  .filters {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 28px;
-    animation: fadeDown 0.5s 0.2s ease both;
-  }
-  .pill {
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--muted);
-    transition: all 0.15s;
-    user-select: none;
-  }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; animation: fadeDown 0.5s 0.2s ease both; }
+  .pill { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--muted); transition: all 0.15s; user-select: none; }
   .pill:hover { border-color: rgba(200,241,53,0.3); color: var(--text); }
   .pill.active { background: var(--accent); color: #0e0f14; border-color: var(--accent); font-weight: 600; }
-
-  /* section label */
-  .section-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 16px;
-  }
-
-  /* subject grid */
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 12px;
-    margin-bottom: 48px;
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    cursor: pointer;
-    transition: transform 0.2s, border-color 0.2s, background 0.2s;
-    position: relative;
-    overflow: hidden;
-    animation: fadeUp 0.4s ease both;
-  }
-  .card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at top left, var(--card-accent, transparent) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.3s;
-    border-radius: inherit;
-  }
-  .card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.14); }
-  .card:hover::before { opacity: 0.08; }
-  .card.selected { border-color: var(--accent); background: rgba(200,241,53,0.05); }
-  .card.selected::before { opacity: 0.12; --card-accent: var(--accent); }
-
-  .card-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    margin-bottom: 14px;
-    background: var(--surface2);
-    transition: background 0.2s;
-  }
-  .card.selected .card-icon { background: rgba(200,241,53,0.15); }
-
-  .card-name {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: -0.3px;
-    margin-bottom: 5px;
-  }
-  .card-meta {
-    font-size: 11px;
-    color: var(--muted);
-    font-weight: 300;
-  }
-
-  .card-check {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transform: scale(0.5);
-    transition: opacity 0.2s, transform 0.2s;
-  }
+  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; margin-bottom: 40px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; cursor: pointer; transition: transform 0.2s, border-color 0.2s; position: relative; overflow: hidden; animation: fadeUp 0.4s ease both; }
+  .card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.12); }
+  .card.selected { border-color: var(--accent); background: rgba(200,241,53,0.04); }
+  .card-check { position: absolute; top: 14px; right: 14px; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.5); transition: opacity 0.2s, transform 0.2s; }
   .card.selected .card-check { opacity: 1; transform: scale(1); }
   .card-check svg { color: #0e0f14; }
-
-  /* CTA bar */
-  .cta-bar {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    padding: 16px 24px;
-    background: linear-gradient(to top, var(--bg) 60%, transparent);
-    display: flex;
-    justify-content: center;
-    z-index: 10;
-    transform: translateY(100%);
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
+  .card-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 14px; background: var(--surface2); }
+  .card.selected .card-icon { background: rgba(200,241,53,0.12); }
+  .card-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: -0.3px; margin-bottom: 4px; }
+  .card-meta { font-size: 11px; color: var(--muted); font-weight: 300; }
+  .cta-bar { position: fixed; bottom: 0; left: 0; right: 0; padding: 16px 24px; background: linear-gradient(to top, var(--bg) 60%, transparent); display: flex; justify-content: center; z-index: 10; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
   .cta-bar.visible { transform: translateY(0); }
-  .cta-inner {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 12px 12px 12px 20px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    max-width: 480px;
-    width: 100%;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
-  }
-  .cta-count {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    flex: 1;
-  }
+  .cta-inner { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px 12px 12px 20px; display: flex; align-items: center; gap: 16px; max-width: 460px; width: 100%; box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
+  .cta-count { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; flex: 1; }
   .cta-count span { color: var(--accent); }
-  .cta-btn {
-    background: var(--accent);
-    color: #0e0f14;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 22px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 13px;
-    cursor: pointer;
-    transition: opacity 0.15s, transform 0.15s;
-    letter-spacing: 0.2px;
-  }
+  .cta-btn { background: var(--accent); color: #0e0f14; border: none; border-radius: 10px; padding: 10px 22px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; transition: opacity 0.15s, transform 0.15s; }
   .cta-btn:hover { opacity: 0.85; transform: scale(0.98); }
-
-  /* dashboard screen */
-  .dashboard { display: none; }
-  .dashboard.active { display: block; animation: fadeUp 0.4s ease both; }
-
-  .subjects-chosen {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 14px;
-    margin-top: 32px;
-  }
-  .subject-row {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    cursor: pointer;
-    transition: border-color 0.2s, transform 0.2s;
-    animation: fadeUp 0.4s ease both;
-  }
-  .subject-row:hover { border-color: rgba(255,255,255,0.14); transform: translateX(4px); }
-  .subject-row .card-icon { margin-bottom: 0; width: 44px; height: 44px; flex-shrink: 0; }
+  .subjects-chosen { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-top: 32px; }
+  .subject-row { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: border-color 0.2s, transform 0.2s; animation: fadeUp 0.4s ease both; }
+  .subject-row:hover { border-color: rgba(255,255,255,0.12); transform: translateX(4px); }
+  .subject-row .card-icon { margin-bottom: 0; width: 44px; height: 44px; flex-shrink: 0; font-size: 20px; }
   .row-info { flex: 1; }
   .row-info h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .row-pct { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
   .progress-bar-wrap { background: var(--surface2); border-radius: 4px; height: 4px; overflow: hidden; }
-  .progress-bar { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.6s ease; }
-  .row-arrow { color: var(--muted); font-size: 18px; }
-
-  .back-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    transition: color 0.2s, border-color 0.2s;
-    margin-bottom: 32px;
-  }
+  .progress-bar { height: 100%; background: var(--accent); border-radius: 4px; width: 0; transition: width 0.8s ease; }
+  .row-arrow { color: var(--muted); font-size: 20px; }
+  .back-btn { background: none; border: 1px solid var(--border); color: var(--muted); padding: 8px 16px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; transition: color 0.2s, border-color 0.2s; margin-bottom: 32px; }
   .back-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
-
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .hidden { display: none !important; }
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface); border: 1px solid rgba(200,241,53,0.3); border-radius: 10px; padding: 10px 22px; font-size: 13px; color: var(--text); opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none; z-index: 200; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeUp   { from { opacity: 0; transform: translateY(16px);  } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
-<div class="app">
 
-  <header>
-    <div class="logo">Aced<span>.</span></div>
-    <div class="exam-badge" id="boardBadge">AQA ▾</div>
-  </header>
+<!-- AUTH SCREEN -->
+<div id="authScreen">
+  <div class="dot-grid"></div>
+  <div class="glow"></div>
+  <div class="auth-box">
+    <div class="auth-logo">Aced<span>.</span></div>
+    <div class="auth-sub">GCSE Revision</div>
+    <div class="badges">
+      <div class="badge"><div class="badge-dot"></div>Past Papers</div>
+      <div class="badge"><div class="badge-dot"></div>Progress Tracking</div>
+      <div class="badge"><div class="badge-dot"></div>All Subjects</div>
+    </div>
+    <div class="auth-tagline">Sign in to save your progress,<br>track your subjects, and start revising.</div>
+    <button class="google-btn" onclick="signInWithGoogle()">
+      <svg class="google-icon" viewBox="0 0 24 24">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      Continue with Google
+    </button>
+    <div class="auth-divider">secure &amp; free</div>
+    <div class="auth-note">By continuing you agree to our <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a>. We never share your data.</div>
+  </div>
+</div>
 
-  <!-- SCREEN 1: Subject Picker -->
+<!-- MAIN APP -->
+<div id="mainApp" class="hidden">
+
+  <!-- Subject Picker -->
   <div id="pickerScreen">
-    <div class="hero">
-      <h1>Pick your <em>subjects</em><br>let's get started.</h1>
-      <p>Choose everything you're studying. You can always add more later.</p>
-    </div>
-
-    <div class="search-wrap">
-      <div class="search-box">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" id="searchInput" placeholder="Search subjects…" oninput="filterCards()">
+    <div class="app">
+      <header>
+        <div class="logo">Aced<span>.</span></div>
+        <div class="user-pill" onclick="signOut()">
+          <div class="user-avatar" id="userInitial">A</div>
+          <span id="userName">Account</span>&nbsp;·&nbsp;sign out
+        </div>
+      </header>
+      <div class="hero">
+        <h1>Pick your <em>subjects</em>,<br>let's get started.</h1>
+        <p>Choose everything you're studying this year. You can always change this later.</p>
       </div>
+      <div class="search-wrap">
+        <div class="search-box">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="searchInput" placeholder="Search subjects…" oninput="filterCards()">
+        </div>
+      </div>
+      <div class="filters">
+        <div class="pill active" onclick="filterGroup(this,'all')">All</div>
+        <div class="pill" onclick="filterGroup(this,'science')">Science</div>
+        <div class="pill" onclick="filterGroup(this,'humanities')">Humanities</div>
+        <div class="pill" onclick="filterGroup(this,'languages')">Languages</div>
+        <div class="pill" onclick="filterGroup(this,'arts')">Arts &amp; Tech</div>
+      </div>
+      <div class="section-label">Core subjects</div>
+      <div class="grid" id="coreGrid"></div>
+      <div class="section-label">Optional subjects</div>
+      <div class="grid" id="optGrid"></div>
     </div>
-
-    <div class="filters">
-      <div class="pill active" onclick="filterGroup(this,'all')">All</div>
-      <div class="pill" onclick="filterGroup(this,'science')">Science</div>
-      <div class="pill" onclick="filterGroup(this,'humanities')">Humanities</div>
-      <div class="pill" onclick="filterGroup(this,'languages')">Languages</div>
-      <div class="pill" onclick="filterGroup(this,'arts')">Arts & Tech</div>
-    </div>
-
-    <div class="section-label">Core subjects</div>
-    <div class="grid" id="coreGrid"></div>
-
-    <div class="section-label" id="optLabel">Optional subjects</div>
-    <div class="grid" id="optGrid"></div>
   </div>
 
-  <!-- SCREEN 2: Dashboard -->
-  <div id="dashScreen" class="dashboard">
-    <button class="back-btn" onclick="goBack()">← Back to subjects</button>
-    <div class="hero">
-      <h1>Your <em>revision</em><br>dashboard.</h1>
-      <p>Pick a subject to start practising past paper questions.</p>
+  <!-- Dashboard -->
+  <div id="dashScreen" class="hidden">
+    <div class="app">
+      <header>
+        <div class="logo">Aced<span>.</span></div>
+        <div class="user-pill" onclick="signOut()">
+          <div class="user-avatar" id="userInitial2">A</div>
+          <span id="userName2">Account</span>&nbsp;·&nbsp;sign out
+        </div>
+      </header>
+      <button class="back-btn" onclick="goBack()">← Edit subjects</button>
+      <div class="hero">
+        <h1>Your <em>revision</em><br>dashboard.</h1>
+        <p>Select a subject to start practising with past papers.</p>
+      </div>
+      <div class="subjects-chosen" id="dashGrid"></div>
     </div>
-    <div class="subjects-chosen" id="dashGrid"></div>
   </div>
 
 </div>
 
-<!-- CTA bar -->
+<!-- CTA Bar -->
 <div class="cta-bar" id="ctaBar">
   <div class="cta-inner">
     <div class="cta-count"><span id="ctaNum">0</span> subjects selected</div>
@@ -395,43 +194,63 @@
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
 const subjects = [
-  { id:'maths',   name:'Mathematics',    icon:'📐', group:'core',       meta:'Number, Algebra, Geometry', color:'#c8f135' },
-  { id:'english', name:'English Language',icon:'✍️', group:'core',       meta:'Reading, Writing, Speaking', color:'#6c63ff' },
-  { id:'englit',  name:'English Literature',icon:'📖',group:'core',      meta:'Prose, Poetry, Drama',       color:'#ff6b6b' },
-  { id:'bio',     name:'Biology',         icon:'🧬', group:'science',    meta:'Cells, Genetics, Ecology',   color:'#4ecdc4' },
-  { id:'chem',    name:'Chemistry',       icon:'⚗️', group:'science',    meta:'Atoms, Reactions, Rates',    color:'#f7dc6f' },
-  { id:'phys',    name:'Physics',         icon:'⚡', group:'science',    meta:'Forces, Energy, Waves',      color:'#85c1e9' },
-  { id:'hist',    name:'History',         icon:'🏛️', group:'humanities', meta:'Causes, Events, Consequence',color:'#f0b27a' },
-  { id:'geo',     name:'Geography',       icon:'🌍', group:'humanities', meta:'Physical & Human geography', color:'#82e0aa' },
-  { id:'re',      name:'Religious Studies',icon:'☮️',group:'humanities', meta:'Ethics, Beliefs, Practices', color:'#c39bd3' },
-  { id:'fr',      name:'French',          icon:'🇫🇷', group:'languages',  meta:'Reading, Writing, Speaking', color:'#85c1e9' },
-  { id:'sp',      name:'Spanish',         icon:'🇪🇸', group:'languages',  meta:'Vocabulary, Grammar, GCSE',  color:'#f1948a' },
-  { id:'de',      name:'German',          icon:'🇩🇪', group:'languages',  meta:'Language & culture',         color:'#aab7b8' },
-  { id:'art',     name:'Art & Design',    icon:'🎨', group:'arts',       meta:'Portfolio, Exam piece',      color:'#ff6b9d' },
-  { id:'dt',      name:'Design & Tech',   icon:'🔧', group:'arts',       meta:'Resistant materials, CAD',   color:'#f39c12' },
-  { id:'cs',      name:'Computer Science',icon:'💻', group:'arts',       meta:'Algorithms, Python, Theory', color:'#5dade2' },
-  { id:'music',   name:'Music',           icon:'🎵', group:'arts',       meta:'Performance, Theory, Comp',  color:'#a569bd' },
+  { id:'maths',   name:'Mathematics',        icon:'📐', group:'core',       meta:'Number, Algebra, Geometry' },
+  { id:'english', name:'English Language',   icon:'✍️',  group:'core',       meta:'Reading, Writing, Speaking' },
+  { id:'englit',  name:'English Literature', icon:'📖', group:'core',       meta:'Prose, Poetry, Drama' },
+  { id:'bio',     name:'Biology',            icon:'🧬', group:'science',    meta:'Cells, Genetics, Ecology' },
+  { id:'chem',    name:'Chemistry',          icon:'⚗️',  group:'science',    meta:'Atoms, Reactions, Rates' },
+  { id:'phys',    name:'Physics',            icon:'⚡', group:'science',    meta:'Forces, Energy, Waves' },
+  { id:'hist',    name:'History',            icon:'🏛️', group:'humanities', meta:'Causes, Events, Consequence' },
+  { id:'geo',     name:'Geography',          icon:'🌍', group:'humanities', meta:'Physical & Human geography' },
+  { id:'re',      name:'Religious Studies',  icon:'☮️',  group:'humanities', meta:'Ethics, Beliefs, Practices' },
+  { id:'fr',      name:'French',             icon:'🇫🇷', group:'languages',  meta:'Reading, Writing, Speaking' },
+  { id:'sp',      name:'Spanish',            icon:'🇪🇸', group:'languages',  meta:'Vocabulary & Grammar' },
+  { id:'de',      name:'German',             icon:'🇩🇪', group:'languages',  meta:'Language & culture' },
+  { id:'art',     name:'Art & Design',       icon:'🎨', group:'arts',       meta:'Portfolio & exam piece' },
+  { id:'dt',      name:'Design & Tech',      icon:'🔧', group:'arts',       meta:'Resistant materials, CAD' },
+  { id:'cs',      name:'Computer Science',   icon:'💻', group:'arts',       meta:'Algorithms, Python, Theory' },
+  { id:'music',   name:'Music',              icon:'🎵', group:'arts',       meta:'Performance, Theory, Comp' },
 ];
+const core     = subjects.filter(s => s.group === 'core');
+const optional = subjects.filter(s => s.group !== 'core');
+const selected = new Set();
+let currentFilter = 'all', searchTerm = '';
 
-const core    = subjects.filter(s => s.group === 'core');
-const optional= subjects.filter(s => s.group !== 'core');
-const selected= new Set();
-let currentFilter = 'all';
-let searchTerm = '';
+function signInWithGoogle() {
+  // Demo sign-in — in production this triggers real Google OAuth
+  const name = 'Alex Johnson';
+  const initials = name.split(' ').map(n => n[0]).join('');
+  ['userInitial','userInitial2'].forEach(id => document.getElementById(id).textContent = initials);
+  ['userName','userName2'].forEach(id => document.getElementById(id).textContent = name.split(' ')[0]);
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('mainApp').classList.remove('hidden');
+  renderGrid(document.getElementById('coreGrid'), core);
+  renderGrid(document.getElementById('optGrid'), optional);
+  showToast('👋 Welcome, ' + name.split(' ')[0] + '!');
+}
+
+function signOut() {
+  selected.clear();
+  document.getElementById('mainApp').classList.add('hidden');
+  document.getElementById('authScreen').classList.remove('hidden');
+  document.getElementById('dashScreen').classList.add('hidden');
+  document.getElementById('pickerScreen').classList.remove('hidden');
+  document.getElementById('ctaBar').classList.remove('visible');
+  showToast('Signed out. See you soon!');
+}
 
 function renderGrid(container, items) {
   container.innerHTML = '';
   items.forEach((s, i) => {
-    const visible = matchesFilter(s);
     const div = document.createElement('div');
     div.className = 'card' + (selected.has(s.id) ? ' selected' : '');
     div.style.animationDelay = (i * 0.04) + 's';
-    div.style.setProperty('--card-accent', s.color);
-    div.dataset.id = s.id;
-    div.dataset.group = s.group;
-    div.style.display = visible ? '' : 'none';
+    div.dataset.id = s.id; div.dataset.group = s.group;
+    div.style.display = matchesFilter(s) ? '' : 'none';
     div.innerHTML = `
       <div class="card-check"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="card-icon">${s.icon}</div>
@@ -443,72 +262,63 @@ function renderGrid(container, items) {
 }
 
 function matchesFilter(s) {
-  const groupOk = currentFilter === 'all' || s.group === currentFilter || (currentFilter === 'core' && s.group === 'core');
-  const searchOk = s.name.toLowerCase().includes(searchTerm) || s.meta.toLowerCase().includes(searchTerm);
-  return groupOk && searchOk;
+  return (currentFilter === 'all' || s.group === currentFilter) &&
+    (s.name.toLowerCase().includes(searchTerm) || s.meta.toLowerCase().includes(searchTerm));
 }
-
 function filterCards() {
   searchTerm = document.getElementById('searchInput').value.toLowerCase();
-  document.querySelectorAll('.card').forEach(card => {
-    const s = subjects.find(x => x.id === card.dataset.id);
-    if (s) card.style.display = matchesFilter(s) ? '' : 'none';
+  document.querySelectorAll('.card').forEach(c => {
+    const s = subjects.find(x => x.id === c.dataset.id);
+    if (s) c.style.display = matchesFilter(s) ? '' : 'none';
   });
 }
-
 function filterGroup(el, group) {
   currentFilter = group;
   document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
   filterCards();
 }
-
 function toggleCard(id, el) {
-  if (selected.has(id)) { selected.delete(id); el.classList.remove('selected'); }
-  else { selected.add(id); el.classList.add('selected'); }
+  selected.has(id) ? (selected.delete(id), el.classList.remove('selected')) : (selected.add(id), el.classList.add('selected'));
   updateCTA();
 }
-
 function updateCTA() {
-  const n = selected.size;
-  document.getElementById('ctaNum').textContent = n;
-  document.getElementById('ctaBar').classList.toggle('visible', n > 0);
+  document.getElementById('ctaNum').textContent = selected.size;
+  document.getElementById('ctaBar').classList.toggle('visible', selected.size > 0);
 }
-
 function goToDashboard() {
-  document.getElementById('pickerScreen').style.display = 'none';
+  document.getElementById('pickerScreen').classList.add('hidden');
   document.getElementById('ctaBar').classList.remove('visible');
-  const dash = document.getElementById('dashScreen');
-  dash.classList.add('active');
+  document.getElementById('dashScreen').classList.remove('hidden');
   const grid = document.getElementById('dashGrid');
   grid.innerHTML = '';
-  const chosen = subjects.filter(s => selected.has(s.id));
-  chosen.forEach((s, i) => {
-    const progress = Math.floor(Math.random() * 30);
+  subjects.filter(s => selected.has(s.id)).forEach((s, i) => {
+    const pct = Math.floor(Math.random() * 25);
     const div = document.createElement('div');
     div.className = 'subject-row';
     div.style.animationDelay = (i * 0.06) + 's';
     div.innerHTML = `
-      <div class="card-icon" style="font-size:20px">${s.icon}</div>
+      <div class="card-icon">${s.icon}</div>
       <div class="row-info">
         <h3>${s.name}</h3>
-        <div style="font-size:11px;color:var(--muted);margin-bottom:6px">${progress}% complete</div>
-        <div class="progress-bar-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
+        <div class="row-pct">${pct}% complete</div>
+        <div class="progress-bar-wrap"><div class="progress-bar" id="pb-${s.id}"></div></div>
       </div>
       <div class="row-arrow">›</div>`;
     grid.appendChild(div);
-    setTimeout(() => div.querySelector('.progress-bar').style.width = progress + '%', 100);
+    setTimeout(() => { const pb = document.getElementById('pb-' + s.id); if (pb) pb.style.width = pct + '%'; }, 200 + i * 80);
   });
 }
-
 function goBack() {
-  document.getElementById('dashScreen').classList.remove('active');
-  document.getElementById('pickerScreen').style.display = '';
+  document.getElementById('dashScreen').classList.add('hidden');
+  document.getElementById('pickerScreen').classList.remove('hidden');
   updateCTA();
 }
-
-renderGrid(document.getElementById('coreGrid'), core);
-renderGrid(document.getElementById('optGrid'), optional);
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
 </script>
 </body>
 </html>
